@@ -990,8 +990,17 @@ class PaintGradient(bpy.types.Operator):
 
     _handle = None
 
-    line_shader = gpu.shader.from_builtin('2D_SMOOTH_COLOR')
-    circle_shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    # https://developer.blender.org/docs/release_notes/4.0/python_api/#gpu-module-gpu
+    # "Blender 4.0: Remove deprecated 2D_ / 3D_ prefix for built-in shader names"
+    try:
+        line_shader = gpu.shader.from_builtin('SMOOTH_COLOR')
+        circle_shader = gpu.shader.from_builtin('UNIFORM_COLOR')
+    
+    # https://projects.blender.org/blender/blender/commit/8cfca8e1bd85a300732d92b30741d5c243797a31
+    # Maintain backwards compatibility with Blender versions < 3.4.0
+    except ValueError:
+        line_shader = gpu.shader.from_builtin('2D_SMOOTH_COLOR')
+        circle_shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
 
     start_color: bpy.props.FloatVectorProperty(
         name="Start Color",
